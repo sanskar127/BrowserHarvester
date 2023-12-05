@@ -79,8 +79,18 @@ def profiles(src):
     profiles = {}
 
     for profile in profiles_value:
-        profiles[f"{extract_user_info(f"{src}{profile}\\Preferences")["email"]} | {extract_user_info(f"{src}{profile}\\Preferences")["full_name"]}"] = profile
+        user_info = extract_user_info(f"{src}{profile}\\Preferences")
         
+        # Check if 'full_name' is present in the dictionary
+        if 'full_name' in user_info:
+            full_name = user_info["full_name"]
+            email = user_info["email"]
+        else:
+            full_name = "Unknown"
+            email = "Unknown"
+
+        profiles[f"{full_name} | {email}"] = profile
+
     return profiles
 
 def extract_history(history_path):
@@ -100,7 +110,8 @@ def extract_history(history_path):
 
         for row in history_data:
             url, title, last_visit_time = row
-            last_visit_time = datetime(1601, 1, 1) + timedelta(microseconds=last_visit_time)
+            last_visit_time = datetime(1601, 1, 1) + timedelta(seconds=last_visit_time)
+            
             entry = {
                 'Title': title,
                 'Url': url,
@@ -122,23 +133,12 @@ def extract_history(history_path):
         if connection:
             connection.close()
 
-def setup(selected_index, src):
-    """Sets up the script by copying the history file and extracting history information."""
-    profiles = ['Default']
-    profiles += list_profiles(src, 'Profile')
-    selected_profile = profiles[selected_index]
-    
-    copy_file(f"{src}{selected_profile}\\", "Report", 'History')
-    history = extract_history('Report\\History')
-
-    print(history)
-
 def generate_report():
     print("Report Generated Successfully!")
 
 def export_report(file_name, body):
     try:
-        with open(file_name, 'w') as file:
+        with open(file_name, 'w', encoding='utf-8') as file:
             file.write(body)
             print("File Exported Successfully")
     
@@ -147,19 +147,35 @@ def export_report(file_name, body):
     except PermissionError:
         print(f"Error: Permission denied. Make sure you have the necessary permissions.")
 
-if __name__ == "__main__":
-    # print("Current Browser: Google Chrome")
-    # print("Choose Profiles Exists:")
-    # print()
 
-    # profiles_dict = set_profiles(get_chrome_path())
-
-    # for count, (profile_id, profile_name) in enumerate(profiles_dict.items(), start=1):
-    #     print(f"{count}. {profile_id} ({profile_name})")
-
-    # user_input = int(input("Input index: "))
+def setup(selected_index, src):
+    """Sets up the script by copying the history file and extracting history information."""
+    get_profiles = profiles(src)
+    selected_profile = get_profiles[selected_index]
     
-    # setup(user_input, get_chrome_path())
+    Copy(f"{src}{selected_profile}\\", "Report", 'History')
+    history = extract_history('Report\\History')
+    
+    export_report("Report\\Report.txt", str(history))
+    # print(type(str_history))
+    
+if __name__ == "__main__":
+    print("Current Browser: Google Chrome")
+    print("Choose Profiles Exists:")
+    print()
+
+    profile_names = list(profiles(get_chrome_path()).keys())
+    count = 1
+
+    for count, name in enumerate(profile_names, start=1):
+        print(f"{count}. {name}")
+
+    user_input = int(input("Input index: "))
+    
+    setup(profile_names[user_input+1], get_chrome_path())
+    
+    # export_report("Report\\Report.md", "# Hello There This is used to testing the write method in python")
+    # print(profile_names[user_input])
 
     # print(set_profiles(get_chrome_path()))
     # set_profiles(get_chrome_path())
@@ -167,4 +183,4 @@ if __name__ == "__main__":
     # user_info = set_profiles(get_chrome_path())
 
     # print(user_info)
-    get_profiles(get_chrome_path())
+    # get_profiles(get_chrome_path())
