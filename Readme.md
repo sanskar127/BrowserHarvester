@@ -29,7 +29,7 @@ This Python tool is designed to extract and analyze web browser history, enablin
 1. Run the tool:
    
    ```py
-   app.py
+   App.py
    ```
 2. Follow the on-screen instructions to select the target browser and initiate the analysis.
 
