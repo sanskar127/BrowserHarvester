@@ -70,17 +70,24 @@ def extract_history(history_path):
             connection.close()
 
 # Use streaming output for report generation
+def default_serializer(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError("Type not serializable")
+
 def export_report(file_name, history_generator):
     try:
         with open(file_name, 'w', encoding='utf-8') as file:
             for entry in history_generator:
-                file.write(str(entry) + '\n')
-        
+                # Convert the dictionary to a JSON-formatted string
+                entry_str = json.dumps(entry, ensure_ascii=False, default=default_serializer)
+                file.write(entry_str + '\n')
+
         # Remove the temporary history file
         if os.path.exists('Report\\History'):
             os.remove('Report\\History')
         print("File Exported Successfully")
-    
+
     except (FileNotFoundError, PermissionError) as e:
         print(f"Error: {e}")
 
@@ -101,6 +108,25 @@ def Copy(src, dest, file_name):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def filter_profile(src):
+    profiles = {}
+    profiles_value = list_profiles(src, 'Profile')
+
+    for profile in profiles_value:
+        user_info = extract_user_info(f"{src}{profile}\\Preferences")
+
+        # Check if 'full_name' is present in the dictionary
+        if 'full_name' in user_info:
+            full_name = user_info["full_name"]
+            email = user_info["email"]
+        else:
+            full_name = "Guest"
+            email = "Guest"
+
+        profiles[f"{full_name} | {email}"] = profile
+
+    return profiles
+
 # ... Other functions remain unchanged ...
 
 browser_path = os.path.expanduser("~\\AppData\\Local\\Google\\Chrome\\User Data\\")
@@ -109,14 +135,15 @@ if __name__ == "__main__":
     print("Current Browser: Google Chrome")
     print("Choose Profiles Exists:\n")
 
-    profile_names = list_profiles(browser_path, 'Profile')
+    profile_names = list(filter_profile(browser_path).keys())
+    profile_values = list(filter_profile(browser_path).values())
     
     for count, name in enumerate(profile_names, start=1):
         print(f"{count}. {name}")
 
     user_input = int(input("Input index: ")) - 1
     
-    selected_profile = profile_names[user_input]
+    selected_profile = profile_values[user_input]
     copy_source = os.path.join(browser_path, selected_profile)
     
     Copy(copy_source, "Report", 'History')
