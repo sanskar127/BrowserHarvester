@@ -1,4 +1,4 @@
-# Web Browser History Analysis Tool
+# Browser Harvester
 
 ## Overview
 
@@ -6,7 +6,7 @@ This Python tool is designed to extract and analyze web browser history, enablin
 
 ## Features
 
-1. **Browser Compatibility:** Currently supports popular web browsers such as Chrome, Firefox, and Safari.
+1. **Browser Compatibility:** Currently Google Chrome Browser supported.
 
 2. **Data Extraction:** Extracts browsing history data, including URLs, timestamps, and visit durations.
 
@@ -19,7 +19,7 @@ This Python tool is designed to extract and analyze web browser history, enablin
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/web-history-analysis-tool.git
+   git clone https://github.com/sanskar127/BrowserHarvester.git
    ```
 
 2. Install the SQLite3 for Windows(Currently):
@@ -35,13 +35,8 @@ This Python tool is designed to extract and analyze web browser history, enablin
 
 3. Once the analysis is complete, the tool will provide a summary of the extracted data and analysis results.
 
-## Supported Browsers
-- Google Chrome
-
 ## Contributing
 Contributions are welcome! If you have any ideas for improvements, additional features, or bug fixes, feel free to open an issue or submit a pull request.
 
 ## Disclaimer
 This tool is intended for investigative purposes only. Ensure that you have the legal right to analyze and use the web browser history data. The authors and contributors are not responsible for any misuse or unlawful activities.
-
-Generated using ChatGPT
